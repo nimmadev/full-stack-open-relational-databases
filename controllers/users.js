@@ -1,4 +1,4 @@
-const { User, Blog } = require("../models");
+const { User, Blog, ReadingList } = require("../models");
 
 const userRouter = require("express").Router();
 
@@ -21,6 +21,32 @@ userRouter.get("/", async (req, res) => {
   res.json(users);
 });
 
+userRouter.get("/:id", async (req, res) => {
+  const id = req.params.id;
+  const { read } = req.query;
+  const through = {
+    attributes: ["read", "id"],
+  };
+  if (read !== undefined) {
+    through.where = {
+      read: read === "true",
+    };
+  }
+
+  const user = await User.findByPk(id, {
+    include: [
+      {
+        model: Blog,
+      },
+      {
+        model: Blog,
+        as: "readings",
+        through,
+      },
+    ],
+  });
+  res.json(user);
+});
 userRouter.put("/:username", async (req, res, next) => {
   const username = req.params.username;
   const user = await User.findOne({

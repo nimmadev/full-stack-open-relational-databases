@@ -19,6 +19,10 @@ User.init(
       allowNull: false,
       unique: { msg: "username already taken" },
     },
+    disabled: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     sequelize,
